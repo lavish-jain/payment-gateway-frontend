@@ -25,6 +25,9 @@ class App extends React.Component {
               {/* <RefundForm /> */}
               <h1>Refund</h1>
             </Route>
+            <Route path='/transactionresult'>
+              <h1>Success?Failure?</h1>
+            </Route>
           </Switch>
         </div>
       </Router>

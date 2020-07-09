@@ -1,13 +1,15 @@
 import React from 'react';
 import './PaymentDetailsForm.css';
 import handleLoad from './handleLoad';
+import { Redirect, Link } from 'react-router-dom';
 
 const initialState = {
-    amount: 0,
+    amount: '',
     cardNo: '',
     cvv: '',
     expiry: '',
     name: '',
+    success: false,
 };
 
 class PaymentDetailsForm extends React.Component {
@@ -26,7 +28,8 @@ class PaymentDetailsForm extends React.Component {
             cvv: '',
             expiry: '',
             name: '',
-            saveCard: false,
+            success: false,
+            redirectTo: ''
         }
     }
     componentDidMount() {
@@ -35,25 +38,44 @@ class PaymentDetailsForm extends React.Component {
         });
     }
 
-    handleChange = event  => {
-        const state  = this.state;
+    handleChange = event => {
+        const state = this.state;
         const newState = {
             ...state,
             [event.target.name]: event.target.value,
         }
         this.setState(newState);
     }
-    handleClick = () => {
+    handlePayClick = () => {
         // eslint-disable-next-line no-unused-vars
         const state = this.state;
+        // Send the info to backend, get the transactionID and result as response
+        //If successful, change success to true
+        // Change route to /transactionResult
+        const newState = {
+            ...state,
+            success: true,
+            redirectTo: '/transactionresult'
+        }
+        this.setState(newState);
+        // Clear the fields in the state
         this.setState(initialState);
     }
 
     render() {
+        if (this.state.redirectTo) {
+            return (
+                <Redirect to={this.state.redirectTo}></Redirect>
+            );
+        }
         return (
             <div>
                 <div className="payment-title">
                     <h1>Payment Details</h1>
+                </div>
+                <div className="nav-div">
+                    <Link to='/history'><button class="nav-buttons">History</button></Link>
+                    <Link to='/refund'><button class="nav-buttons">Refund</button></Link>
                 </div>
                 <div className="container preload">
                     <div className="creditcard">
@@ -156,29 +178,29 @@ class PaymentDetailsForm extends React.Component {
                 <div className="form-container">
                     <div className="field-container">
                         <label htmlFor="amount">Amount (<span>&#8377;</span>)</label>
-                        <input id="amount" type="text" value={this.state.amount} ref={this.amountRef} onChange={this.handleChange} name="amount"/>
+                        <input id="amount" type="text" value={this.state.amount} ref={this.amountRef} onChange={this.handleChange} name="amount" />
                     </div>
                     <div className="field-container">
                         <label htmlFor="name">Name</label>
-                        <input id="name" maxLength="20" type="text" value={this.state.name} ref={this.nameRef} onChange={this.handleChange} name="name"/>
+                        <input id="name" maxLength="20" type="text" value={this.state.name} ref={this.nameRef} onChange={this.handleChange} name="name" />
                     </div>
                     <div className="field-container">
                         <label htmlFor="cardnumber">Card Number</label>
-                        <input id="cardnumber" type="text" value={this.state.cardNo} pattern="[0-9]*" inputMode="numeric" ref={this.cardnumberRef} onChange={this.handleChange} name="cardNo"/>
+                        <input id="cardnumber" type="text" value={this.state.cardNo} pattern="[0-9]*" inputMode="numeric" ref={this.cardnumberRef} onChange={this.handleChange} name="cardNo" />
                         <svg id="ccicon" className="ccicon" width="750" height="471" viewBox="0 0 750 471" version="1.1" xmlns="http://www.w3.org/2000/svg"
                             xmlnsXlink="http://www.w3.org/1999/xlink" ref={this.cciconRef}>
                         </svg>
                     </div>
                     <div className="field-container">
                         <label htmlFor="expirationdate">Expiration (mm/yy)</label>
-                        <input id="expirationdate" type="text" value={this.state.expiry} pattern="[0-9]*" inputMode="numeric" ref={this.expirationdateRef} onChange={this.handleChange} name="expiry"/>
+                        <input id="expirationdate" type="text" value={this.state.expiry} pattern="[0-9]*" inputMode="numeric" ref={this.expirationdateRef} onChange={this.handleChange} name="expiry" />
                     </div>
                     <div className="field-container">
                         <label htmlFor="securitycode">Security Code</label>
-                        <input id="securitycode" type="text" value={this.state.cvv} pattern="[0-9]*" inputMode="numeric" ref={this.securitycodeRef} onChange={this.handleChange} name="cvv"/>
+                        <input id="securitycode" type="text" value={this.state.cvv} pattern="[0-9]*" inputMode="numeric" ref={this.securitycodeRef} onChange={this.handleChange} name="cvv" />
                     </div>
                     <div className="field-container">
-                    <button type="submit" onClick={this.handleClick}>Pay</button>
+                        <button className="pay-button" type="submit" onClick={this.handlePayClick}>Pay</button>
                     </div>
                 </div>
             </div>
